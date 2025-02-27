@@ -120,8 +120,8 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-   port = int(os.getenv("PORT", 10000))  # Render provides a PORT environment variable
-   app.run(host="0.0.0.0", port=port)
+    port = int(os.getenv("PORT", 10000))  # Render provides a PORT environment variable
+    app.run(host="0.0.0.0", port=port)
