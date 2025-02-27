@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Capture Photo{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Punch {{ punch_type | capitalize }}</h2>
+<p class="text-center">Click the button below to capture a photo and record your location.</p>
+
+<div class="text-center">
+    <video id="video" width="400" height="300" autoplay></video>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <br>
+    <button class="btn btn-primary mt-3" onclick="capturePhoto()">Capture</button>
+</div>
+
+<form id="punchForm" method="POST" action="/save_punch">
+    <input type="hidden" name="photo" id="photo">
+    <input type="hidden" name="latitude" id="latitude">
+    <input type="hidden" name="longitude" id="longitude">
+    <input type="hidden" name="punch_type" value="{{ punch_type }}">
+    <button type="submit" class="btn btn-success mt-3 w-100">Submit Punch</button>
+</form>
+
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const photoInput = document.getElementById('photo');
+    const latitudeInput = document.getElementById('latitude');
+    const longitudeInput = document.getElementById('longitude');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => { video.srcObject = stream; })
+        .catch(err => { console.error("Error accessing camera", err); });
+
+    function capturePhoto() {
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        photoInput.value = canvas.toDataURL('image/jpeg');
+        alert("Photo Captured!");
+    }
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                latitudeInput.value = position.coords.latitude;
+                longitudeInput.value = position.coords.longitude;
+            });
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    getLocation();
+</script>
+{% endblock %}
